@@ -1,0 +1,49 @@
+docker build -f Dockerfile.dev .
+docker run -it 378409818591 npm run test
+
+
+En raison d'une mise à jour récente de la bibliothèque de l'application Create React, nous devrons modifier la façon dont nous démarrons nos conteneurs.
+
+Dans la prochaine conférence, vous devrez ajouter :
+
+docker run -it -p 3000:3000 CONTAINER_ID
+
+/****************************************************************/
+
+pour faire tourner l'application avec le reférencement des modules 
+docker build -f Dockerfile.dev .
+On récupère leCONTAINER_ID
+docker run -it -p 3000:3000 -v /app/node_modules -v ${PWD}:/app -e CHOKIDAR_USEPOLLING=true 99860273e506
+
+/******************************************************************/
+Récemment, un bogue a été introduit avec la dernière version de l'application Create React 
+qui provoque la fermeture de l'application React lors du démarrage de Docker Compose.
+
+Pour résoudre ce problème :
+Ajoutez la propriété stdin_open à votre fichier docker-compose.yml 
+  web:
+    stdin_open: true
+
+Assurez-vous de reconstruire vos conteneurs après avoir effectué cette modification :
+docker-compose down && docker-compose up --build
+
+
+Lorsque l'on a un fichier docker-compose.yml alors on effectue les commandes suivantes :
+docker-compose up
+
+
+/********************************************************************/
+excution des fichiers avec test
+docker run -it 378409818591 npm run test
+
+si le container est en cours d'execution nous pouvons rajouter une commande en cours
+docker exec -it 7f1fd30ddd97 npm run test 
+mais pour automatiser cela nous allons modifier le fichier docker-compose.yml
+et on le recompile avec la commande : 
+docker-compose up --build
+
+Ensuite pour que les commandes de testes (p, t , q, r ) fonctionnent il faut executer la commande suivante :
+pour avoir l'id du comtainer_id
+docker ps
+ensuite =>
+docker exec -it c90d3dbe2b42 sh
